@@ -1,0 +1,96 @@
+﻿@page "/"
+@namespace YUBA.GDM.Web.Blazor.Pages
+@using System.Globalization
+@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
+@using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@using Volo.Abp.Localization
+@{
+    Layout = null;
+    var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
+}
+
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentCulture.Name" dir="@rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YUBA.GDM.Web.Blazor</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
+
+    <abp-style-bundle name="@BlazorLeptonXLiteThemeBundles.Styles.Global" />
+</head>
+<body class="abp-application-layout bg-light @rtl">
+
+    <component type="typeof(App)" render-mode="Server" />
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <abp-script-bundle name="@BlazorLeptonXLiteThemeBundles.Scripts.Global" />
+    <script>
+        window.saveAsFilePDF = (filename, bytes) => {
+            const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        window.addEventListener('DOMContentLoaded', function () {
+            document.documentElement.style.setProperty('--lpx-brand', '#25306e');
+            document.documentElement.style.setProperty('--lpx-logo', 'url(/images/logo/leptonxlite/logo.png)');
+            document.documentElement.style.setProperty('--lpx-logo-icon', 'url(/images/logo/leptonxlite/market_small.jpg)');
+            document.documentElement.style.setProperty('.lpx-brand-logo', 'background-position:50px');
+            document.documentElement.style.setProperty('.lpx-brand-logo', 'z-index:10000');
+            document.documentElement.style.setProperty('.lpx-logo-container', 'background: #ffffff');
+
+        });
+
+        function saveAsFile(filename, bytesBase64) {
+            var link = document.createElement('a');
+            link.download = filename;
+            link.href = "data:application/octet-stream;base64," + bytesBase64;
+            document.body.appendChild(link); // Needed for Firefox
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function CustomConfirm(title, message, type) {
+            return new Promise((resolve) => {
+                Swal.fire({
+                    title: title,
+                    text: message,
+                    icon: type,
+                    showCancelButton: true,
+                    confirmButtonColor: '#25306e',
+                    cancelButtonColor: '#25306e',
+                    cancelButtonText: 'No',
+                    confirmButtonText: 'Sí'
+                }).then((result) => {
+                    if (result.value) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+    </script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

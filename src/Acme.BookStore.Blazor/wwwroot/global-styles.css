@@ -1,0 +1,36 @@
+body {
+}
+
+:root .lpx-brand-logo {
+    /*--lpx-logo: url('/images/logo/leptonx/market.jpg');*/
+    --rz-grid-cell-font-size: 0.650rem;
+    --rz-grid-header-font-size: 0.675rem;
+}
+
+
+.col-lg-6 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.lpx-sidebar .lpx-logo-container .menu-collapse-icon {
+    display: none;
+}
+
+.oxyy-login-register .btn-primary {
+    border-color: black;
+}
+
+.lpx-content-container .lpx-content {
+    padding: 0;
+    margin: 0 auto;
+}
+
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #7DD135;
+}
+
+.superdry.dropdown-menu {
+    --bs-dropdown-link-active-bg: #0000FF;
+}

@@ -1,0 +1,266 @@
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+
+.pagination .page-item.active .page-link {
+    color: #fff !important;
+    border-radius: 0.5rem;
+    background-color: red !important;
+}
+
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #2DAAE1;
+}
+
+:root {
+    --lpx-brand: #7DD135;
+    --lpx-primary: #355dff;
+    --lpx-secondary: #6c5dd3;
+    --lpx-success: #7DD135;
+    --lpx-light: #f5f5f7;
+    --lpx-info: #438aa7;
+    --rz-grid-cell-font-size: 0.650rem;
+    --rz-grid-header-font-size: 0.675rem;
+}
+
+    :root .lpx-brand-logo {
+        /*--lpx-logo: url('/images/logo/leptonx/market.jpg');*/
+        /*--lpx-logo-icon: url('/images/logo/leptonx/pilatos_logo_small.svg');*/
+        /* --lpx-logo-icon: url('/images/logo/leptonx/logo_kip.png');*/
+    }
+
+.oxyy-login-register .btn-primary {
+    border-color: black;
+}
+
+.nav-link.active {
+    border-bottom: 3px solid #7DD135;
+}
+
+.lpx-sidebar .lpx-logo-container .menu-collapse-icon {
+    display: none;
+}
+
+/*.lpx-logo-container{
+    display: flex;
+    justify-content: center; 
+    align-items: center
+}*/
+
+
+tabs .nav-item.show .nav-link {
+    color: #7DD135;
+    background-color: unset;
+    border-color: #7DD135;
+}
+
+.form-check-input:checked {
+    background-color: #7DD135;
+    border-color: #7DD135;
+}
+
+.nav-tabs .nav-item .nav-link.active {
+    border-bottom: 3px solid #7DD135;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    color: #7DD135;
+    background-color: unset;
+    border-color: #7DD135;
+}
+
+
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #7DD135;
+    background-color: rgba(247, 37, 133, 0.15);
+}
+
+
+
+.lpx-brand-logo {
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-size: auto 52px;
+    /*background-position: 50px;*/
+    height: 52px;
+    border-radius: 10px
+}
+
+.lpx-icon bi bi-filter-left menu-collapse-icon hidden-in-hover-trigger {
+    position: absolute;
+    left: -50px
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #2DAAE1;
+    border-color: #2DAAE1;
+    box-shadow: 0 0 20px 0 rgb(76 87 125 / 2%);
+}
+
+
+    .btn-primary, .btn-check:active + .btn-primary, .btn-primary:active, .btn-primary.active, .show > .btn-primary.dropdown-toggle {
+        color: #fff;
+        background-color: #2DAAE1;
+        border-color: #2DAAE1;
+    }
+
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #2DAAE1;
+            border-color: #2DAAE1;
+        }
+
+
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: lightgray;
+    border-color: lightgray;
+    box-shadow: 0 0 20px 0 rgb(76 87 125 / 2%);
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: lightgray;
+    border-color: lightgray;
+    box-shadow: 0 0 20px 0 rgb(76 87 125 / 2%);
+}
+
+.lpx-logo-container {
+    padding: 10px;
+}
+
+    .lpx-logo-container::before {
+        /**    content: url('/images/logo/leptonx/logo_small.png');*/
+        /** content: url('/images/logo/leptonx/log_kip_small2.png');*/
+        /*position: absolute;*/
+        /*z-index: 100;
+        /*left: 20px;
+        top: 18px;*/
+    }
+
+.card .card-header .btn {
+    font-size: 1.075em;
+}
+
+i[b-check] {
+    color: green;
+}
+
+i[b-times] {
+    color: red;
+}
+
+.spinner {
+    border: 16px solid silver;
+    border-top: 16px solid #ff0000;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 700ms linear infinite;
+    margin: 50px;
+}
+
+ul[role=tablist] {
+    flex-wrap: wrap;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(-360deg)
+    }
+}
+
+.rz-button.rz-info.rz-shade-default, .rz-info.rz-shade-default.rz-paginator-element {
+    background-color: #7DD135;
+}
+
+
+.rz-button.rz-primary.rz-shade-default, .rz-primary.rz-shade-default.rz-paginator-element {
+    background-color: #7DD135;
+}
+
+
+
+.swal2-styled.swal2-confirm {
+    background-color: #7DD135;
+}
+
+
+
+.col-lg-6 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+
+.lpx-content-container .lpx-content {
+    padding: 0;
+    margin: 0 auto;
+}
+
+
+.nav-link {
+    display: block;
+    padding: .5rem 1rem;
+    color: #686B6E;
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #7DD135;
+}
+
+.spinner {
+    border: 16px solid silver;
+    border-top: 16px solid #7DD135;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 700ms linear infinite;
+    margin: 50px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(-360deg)
+    }
+}
+
+i[b-check] {
+    color: #7DD135;
+}
+
+i[b-times] {
+    color: red;
+}

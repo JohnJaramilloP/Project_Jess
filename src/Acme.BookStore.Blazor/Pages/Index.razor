@@ -1,0 +1,22 @@
+﻿@page "/"
+@inherits BookStoreComponentBase
+<div class="row entry-row">
+    <div class="col-auto">
+        <h1 class="content-header-title">Welcome to BookStore!</h1>
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <h1>Portal</h1>
+
+        <p class="lead px-lg-5 mx-lg-5">@L["LongWelcomeMessage"]</p>
+        
+        @if (!CurrentUser.IsAuthenticated)
+        {
+            <a href="/Account/Login" class="btn btn-primary mb-1">
+                @L["Login"]
+            </a>
+        }
+    </CardBody>
+</Card>
+

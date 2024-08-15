@@ -1,0 +1,432 @@
+﻿@page "/principal"
+@using Acme.BookStore.Base;
+@using Acme.BookStore.Ratings;
+@using Acme.BookStore.DTO.Ratings;
+@using Acme.BookStore.DTO.Base;
+@using Acme.BookStore.Permissions;
+
+@attribute [Authorize(BookStorePermissions.Main.Default)];
+
+@inject IBaseAppService BaseAppService
+
+
+
+@if (loader)
+{
+    <div style="width: 100vw; height: 100vh; background: #00000090; position: fixed; top: 0px; left: 0px; z-index: 100000; display: flex; justify-content: center; align-items: center; border-radius: 10px">
+        <div>
+            <div class="spinner"></div>
+            <h4 style="color: #ffffff">Procesando Datos...</h4>
+        </div>
+    </div>
+}
+
+<div style="margin: 20px;">
+    <Row>
+        <h3>Vista Principal</h3>
+    </Row>
+    <Card>
+        <CardHeader>
+            <Row Style="margin: 20px 0">
+                <Column Style="display: flex; flex-direction: column">
+                    <Div Style="display: flex; justify-content: space-between; align-items: center">
+                        <Div Style="width: 40%">
+                            <Blazorise.FieldLabel Style="">Selecciona fecha inicial:</Blazorise.FieldLabel>
+                            <Div>
+                                <RadzenDatePicker TValue="DateTime?" Value=@fecha_inicial Change="@(async args => {fecha_inicial = args;})" Name="RadzenDatePickerChangeEvent" Style="width: 100%" />
+                            </Div>
+                        </Div>
+                        <Div Style="width: 40%">
+                            <Blazorise.FieldLabel Style="">Selecciona fecha final:</Blazorise.FieldLabel>
+                            <Div>
+                                <RadzenDatePicker TValue="DateTime?" Value=@fecha_final Change="@(async args => {fecha_final = args;})" Name="RadzenDatePickerChangeEvent" Style="width: 100%" />
+                            </Div>
+                        </Div>
+                    </Div>
+
+                </Column>
+            </Row>
+            <Row Style="margin-bottom: 20px">
+                <Column Style="display: flex">
+                    <Div Style="display: flex; align-items: end">
+                        <Div Style="margin-right: 40px">
+                            <RadzenButton Click=@(async () => {await filtroFechas();})
+                                          ButtonStyle="ButtonStyle.Light"
+                                          style="height:1.5em; text-align:center; background: #7DD135; color: #fff">
+                                Filtrar Datos
+                            </RadzenButton>
+                        </Div>
+                        <Div>
+                            <RadzenButton Click=@(async () => {await quitarFiltroFechas();})
+                                          ButtonStyle="ButtonStyle.Light"
+                                          style="height:1.5em; text-align:center; background: #7DD135; color: #fff">
+                                Quitar Filtro
+                            </RadzenButton>
+                        </Div>
+                    </Div>
+
+                </Column>
+            </Row>
+            <Row Style="display: flex; justify-content: space-between">
+                <Div Style="width: 45%">
+                    <div style="display: flex; width: 100%; justify-content: space-between">
+
+                        <div style="width: 33%">
+                            <h4>
+                                Seleccione Archivo
+                            </h4>
+                            <InputFile OnChange="@LoadFiles" />
+
+                        </div>
+                    </div>
+                    <div style="margin-top:8px">
+                        <RadzenButton Text="Cargar Archivo" Click="upFileImport" ButtonStyle="ButtonStyle.Info" />
+                    </div>
+                </Div>
+                <Div Style="width: 45%">
+                    <h4>
+                        Promedio Global: @promedioGlobal
+                    </h4>
+                </Div>
+            </Row>
+        </CardHeader>
+        <CardBody>
+            <RadzenDataGrid AllowFiltering="true"
+                            AllowColumnResize="true"
+                            AllowAlternatingRows="true"
+                            FilterMode="FilterMode.Advanced"
+                            FilterText="Filtrar"
+                            AndOperatorText="y"
+                            OrOperatorText="o"
+                            ContainsText="Contiene"
+                            EqualsText="Igual"
+                            NotEqualsText="No igual"
+                            StartsWithText="Comienza con"
+                            EndsWithText="Termina con"
+                            DoesNotContainText="No contiene"
+                            IsNullText="Es nulo"
+                            IsEmptyText="Está vacío"
+                            IsNotNullText="No es nulo"
+                            IsNotEmptyText="No está vacío"
+                            ApplyFilterText="Aplicar"
+                            ClearFilterText="Limpiar"
+                            EmptyText="No hay datos para mostrar."
+                            AllowSorting="true"
+                            PageSize="20"
+                            AllowPaging="true"
+                            @ref="grid"
+                            PagerHorizontalAlign="HorizontalAlign.Left"
+                            ShowPagingSummary="true"
+                            Data="@Listado"
+                            TItem="RatingDto"
+                            ColumnWidth="300px"
+                            Filter="@OnFilter"
+                            FilterCleared="@OnFilterCleared"
+                            LogicalFilterOperator="LogicalFilterOperator.Or">
+
+                <Columns>
+                    <RadzenDataGridColumn TItem="RatingDto" Property="qar" Title="QAR" Width="130px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="record_type" Title="Record Type" Width="150px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="qa_analyst" Title="QA_Analyst" Width="120px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="session_type" Title="Session_Type" Width="120px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="date_time" Title="Date" Width="150px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="overall_rating" Title="Overall Rating" Width="150px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="score_string" Title="Score" Width="110px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="code" Title="Code" Width="110px" />
+                    <RadzenDataGridColumn TItem="RatingDto" Property="name" Title="Name" Width="150px" />
+                </Columns>
+
+            </RadzenDataGrid>
+        </CardBody>
+    </Card>
+</div>
+
+@code {
+
+    bool loader = false;
+
+    private List<IBrowserFile> loadedFiles = new();
+    List<RatingDto> Listado = new List<RatingDto>();
+    List<RatingDto> ListadoCompleto = new List<RatingDto>();
+
+    public String NombreArchivoBind = "";
+    private long maxFileSize = 88216570;
+    private int maxAllowedFiles = 1;
+    DateTime? fecha_inicial = DateTime.Now;
+    DateTime? fecha_final = DateTime.Now;
+
+    RadzenDataGrid<RatingDto> grid = new RadzenDataGrid<RatingDto>();
+
+    decimal promedioGlobal = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loader = true;
+        await Task.Delay(1);
+        ListadoCompleto = await BaseAppService.GetListRatingsDto();
+
+        var currentYear = DateTime.Now.Year;
+        var currentMonth = DateTime.Now.Month;
+
+        Listado = ListadoCompleto.Where(item => item.date_time.Year == currentYear && item.date_time.Month == currentMonth).ToList();
+
+        var listadoAgrupado = Listado.GroupBy(item => item.name);
+        var promediosPorGrupo = listadoAgrupado
+            .Select(grupo => new
+            {
+                Name = grupo.Key,
+                PromedioScore = grupo.Average(item => decimal.Parse(RemoveAfterDot(item.score_string)))
+            })
+            .ToList();
+
+        if(promediosPorGrupo.Count > 0)
+        {
+            promedioGlobal = Math.Round(promediosPorGrupo.Average(grupo => grupo.PromedioScore), 2);
+        }
+
+        loader = false;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+    }
+
+    private async Task OnFilter(Radzen.DataGridColumnFilterEventArgs<Acme.BookStore.DTO.Ratings.RatingDto> filter)
+    {
+        loader = true;
+        await Task.Delay(1);
+        var dataOperator = filter.FilterOperator;
+        var dataValue = filter.FilterValue;
+        var dataColumn = filter.Column.ColumnPickerTitle;
+
+
+        if (dataOperator.ToString() == "Equals" && dataColumn.ToString() == "Score")
+        {
+            Listado = ListadoCompleto.Where(item => item.score_string == dataValue.ToString()).ToList();
+        }
+        if (dataOperator.ToString() == "StartsWith" && dataColumn.ToString() == "Score")
+        {
+            Listado = ListadoCompleto.Where(item => item.score_string.StartsWith(dataValue.ToString(), StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (dataOperator.ToString() == "Contains" && dataColumn.ToString() == "Score")
+        {
+            Listado = ListadoCompleto.Where(item => item.score_string.Contains(dataValue.ToString())).ToList();
+        }
+
+        if (dataOperator.ToString() == "Equals" && dataColumn.ToString() == "Session_Type")
+        {
+            Listado = ListadoCompleto.Where(item => item.session_type == dataValue.ToString()).ToList();
+        }
+        if (dataOperator.ToString() == "StartsWith" && dataColumn.ToString() == "Session_Type")
+        {
+            Listado = ListadoCompleto.Where(item => item.session_type.StartsWith(dataValue.ToString(), StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (dataOperator.ToString() == "Contains" && dataColumn.ToString() == "Session_Type")
+        {
+            Listado = ListadoCompleto.Where(item => item.session_type.Contains(dataValue.ToString())).ToList();
+        }
+
+        var listadoAgrupado = Listado.GroupBy(item => item.name);
+        var promediosPorGrupo = listadoAgrupado
+            .Select(grupo => new
+            {
+                Name = grupo.Key,
+                PromedioScore = grupo.Average(item => decimal.Parse(RemoveAfterDot(item.score_string)))
+            })
+            .ToList();
+
+        if (promediosPorGrupo.Count > 0)
+        {
+            promedioGlobal = Math.Round(promediosPorGrupo.Average(grupo => grupo.PromedioScore), 2);
+        }
+        loader = false;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+    }
+
+    private async Task OnFilterCleared(Radzen.DataGridColumnFilterEventArgs<Acme.BookStore.DTO.Ratings.RatingDto> filter)
+    {
+        loader = true;
+        await Task.Delay(1);
+
+        Listado = ListadoCompleto;
+
+        var listadoAgrupado = Listado.GroupBy(item => item.name);
+        var promediosPorGrupo = listadoAgrupado
+            .Select(grupo => new
+            {
+                Name = grupo.Key,
+                PromedioScore = grupo.Average(item => decimal.Parse(RemoveAfterDot(item.score_string)))
+            })
+            .ToList();
+
+        if (promediosPorGrupo.Count > 0)
+        {
+            promedioGlobal = Math.Round(promediosPorGrupo.Average(grupo => grupo.PromedioScore), 2);
+        }
+        loader = false;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+    }
+
+    string RemoveAfterDot(string input)
+    {
+        int dotIndex = input.IndexOf('.');
+        if (dotIndex >= 0)
+        {
+            return input.Substring(0, dotIndex);
+        }
+        return input;
+    }
+
+    InputFileChangeEventArgs archivo;
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        archivo = e;
+    }
+
+    private async Task upFileImport()
+    {
+        loader = true;
+        loadedFiles.Clear();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+        if (archivo != null)
+        {
+            foreach (var file in archivo.GetMultipleFiles(maxAllowedFiles))
+            {
+                try
+                {
+                    loadedFiles.Add(file);
+
+                    var trustedFileNameForFileStorage = Path.GetRandomFileName();
+                    //   var path = "C:\\tmp\\" + file.Name;
+                    var path = "/tmp/" + file.Name;
+
+                    NombreArchivoBind = file.Name;
+
+                    await using FileStream fs = new(path, FileMode.Create);
+                    await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+                    fs.Close();
+
+                    try
+                    {
+                        await BaseAppService.ProcesarIncentivos(path);
+
+                        var listado = await BaseAppService.GetListRatingsDto();
+
+                        var currentYear = DateTime.Now.Year;
+                        var currentMonth = DateTime.Now.Month;
+
+                        Listado = listado.Where(item => item.date_time.Year == currentYear && item.date_time.Month == currentMonth).ToList();
+                        JS.AlertSuccess("Registros Cargados!");
+                    }
+                    catch (Exception exx)
+                    {
+                        JS.AlertSuccess("Error al procesar el archivo!");
+                    }
+                    loader = false;
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(1);
+                    archivo = null;
+                }
+                catch (Exception ex)
+                {
+                    JS.alertTextTitle("Error", "Error al procesar el archivo!", TipoMensajeSweetAlert.error);
+                    loader = false;
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(1);
+                }
+            }
+        }
+        else
+        {
+            JS.alertTextTitle("Error", "Debes cargar un archivo!", TipoMensajeSweetAlert.error);
+            loader = false;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
+        }
+
+        loader = false;
+    }
+
+    public async Task filtroFechas()
+    {
+        if (fecha_inicial.Value.ToString() != fecha_final.Value.ToString())
+        {
+            loader = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
+            DateTime fecha_inicio = fecha_inicial.Value;
+            DateTime fecha_fin = fecha_final.Value;
+
+            var listadoCompleto = await BaseAppService.GetListRatingsDto();
+
+            Listado = listadoCompleto.Where(item => item.date_time >= fecha_inicio && item.date_time <= fecha_fin).ToList();
+
+            var listadoAgrupado = Listado.GroupBy(item => item.name);
+            var promediosPorGrupo = listadoAgrupado
+                .Select(grupo => new
+                {
+                    Name = grupo.Key,
+                    PromedioScore = grupo.Average(item => decimal.Parse(RemoveAfterDot(item.score_string)))
+                })
+                .ToList();
+
+            if (promediosPorGrupo.Count > 0)
+            {
+                promedioGlobal = Math.Round(promediosPorGrupo.Average(grupo => grupo.PromedioScore), 2);
+            }
+            else
+            {
+                promedioGlobal = 0;
+            }
+
+            loader = false;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
+        }
+        else
+        {
+            JS.alertTextTitle("Error", "Debes seleccionar un rango de fechas diferente", TipoMensajeSweetAlert.error);
+        }
+    }
+
+    public async Task quitarFiltroFechas()
+    {
+        loader = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+
+        var listado = await BaseAppService.GetListRatingsDto();
+
+        var currentYear = DateTime.Now.Year;
+        var currentMonth = DateTime.Now.Month;
+
+        Listado = listado.Where(item => item.date_time.Year == currentYear && item.date_time.Month == currentMonth).ToList();
+
+        var listadoAgrupado = Listado.GroupBy(item => item.name);
+        var promediosPorGrupo = listadoAgrupado
+            .Select(grupo => new
+            {
+                Name = grupo.Key,
+                PromedioScore = grupo.Average(item => decimal.Parse(RemoveAfterDot(item.score_string)))
+            })
+            .ToList();
+
+        if (promediosPorGrupo.Count > 0)
+        {
+            promedioGlobal = Math.Round(promediosPorGrupo.Average(grupo => grupo.PromedioScore), 2);
+        }
+        else
+        {
+            promedioGlobal = 0;
+        }
+
+        fecha_inicial = DateTime.Now;
+        fecha_final = DateTime.Now;
+
+        loader = false;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+    }
+}
