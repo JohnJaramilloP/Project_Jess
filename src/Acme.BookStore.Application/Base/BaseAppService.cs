@@ -113,7 +113,15 @@ namespace Acme.BookStore.Base
             try
             {
 
-                List<Rating> ListadoDocumentos = ReadExcelFileIncentivos(pathFile);
+                List<Rating> ListadoDocumentos = await ReadExcelFileIncentivos(pathFile);
+
+                var primerDiaDelMes = new DateTime(ListadoDocumentos.FirstOrDefault().date_time.Year, ListadoDocumentos.FirstOrDefault().date_time.Month, 1);
+                var ultimoDiaDelMes = primerDiaDelMes.AddMonths(1).AddDays(-1);
+
+                var registrosAEliminar = dbContext.Ratings
+                    .Where(r => r.date_time >= primerDiaDelMes && r.date_time <= ultimoDiaDelMes);
+
+                dbContext.Ratings.RemoveRange(registrosAEliminar);
 
                 int valorRetornar = 0;
 
@@ -175,7 +183,7 @@ namespace Acme.BookStore.Base
             return match.Value;
         }
 
-        public List<Rating> ReadExcelFileIncentivos(string fileName)
+        public async Task<List<Rating>> ReadExcelFileIncentivos(string fileName)
         {
             List<Rating> listadoDocumentos = new List<Rating>();
 
@@ -263,9 +271,6 @@ namespace Acme.BookStore.Base
                                      name = dr[8]?.ToString() ?? "",
                                      Id = Guid.NewGuid(),
                                  }).ToList();
-
-
-
 
             return listadoDocumentos;
         }
